@@ -10,7 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// addCmd represents the add command
+var fileDirectory string
+var filename string
+
+
 var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Adds a new task to the todo list",
@@ -18,19 +21,15 @@ var addCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		todo := args[0]
+		path := fmt.Sprintf("%s\\%s", fileDirectory, filename)
 
-		home, err := os.UserHomeDir()
-		if err != nil {
-			panic("Failed to obtain home directory")
-		}
-
-		file, err := os.OpenFile(home+"\\todoList.txt", os.O_CREATE, 0777)
+		file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 		if err != nil {
 			panic("Failed to read todo list")
 		}
 		defer file.Close()
 
-		file.WriteString(todo + "\n")
+		file.WriteString("- [ ] " + todo + "\n")
 
 		fmt.Printf("Added \"%s\" to the todo list\n", todo)
 	},
@@ -39,13 +38,15 @@ var addCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(addCmd)
 
-	// Here you will define your flags and configuration settings.
+	addCmd.Flags().StringVarP(&fileDirectory, "directory", "d", defaultDir(), "Specifies the directory of the file")
+	addCmd.Flags().StringVarP(&filename, "file", "f", "TODO.md", "Specifies which file to use")
+}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
+func defaultDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		panic("Invalid default directory")
+	}
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	return home
 }
