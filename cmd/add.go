@@ -13,7 +13,6 @@ import (
 var fileDirectory string
 var filename string
 
-
 var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Adds a new task to the todo list",
@@ -21,7 +20,7 @@ var addCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		todo := args[0]
-		path := fmt.Sprintf("%s\\%s", fileDirectory, filename)
+		path := fmt.Sprintf("%s\\%s", GetVaultDirectory(), filename)
 
 		file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 		if err != nil {
@@ -38,15 +37,6 @@ var addCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(addCmd)
 
-	addCmd.Flags().StringVarP(&fileDirectory, "directory", "d", defaultDir(), "Specifies the directory of the file")
+	addCmd.Flags().StringVarP(&fileDirectory, "directory", "d", GetVaultDirectory(), "Specifies the directory of the file")
 	addCmd.Flags().StringVarP(&filename, "file", "f", "TODO.md", "Specifies which file to use")
-}
-
-func defaultDir() string {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		panic("Invalid default directory")
-	}
-
-	return home
 }
