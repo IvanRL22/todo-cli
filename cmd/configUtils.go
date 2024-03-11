@@ -7,6 +7,7 @@ package cmd
 import (
 	"encoding/json"
 	"os"
+	"strings"
 )
 
 // Provides utilities to access configuration file
@@ -15,15 +16,34 @@ var configFileName string = "\\.todoConfig.json"
 
 type TodoConfig struct {
 	VaultDirectory string
+	Filename       string
 }
 
-func GetConfigFileVerbose() string {
+func (c *TodoConfig) prettyConfig() string {
+	var result strings.Builder
+
+	result.WriteString("FILE CONFIGURATION\n")
+	result.WriteString("===================\n")
+	result.WriteString("Directory: " + c.VaultDirectory + "\n")
+	result.WriteString("Filename: " + c.Filename + "\n")
+
+	return result.String()
+}
+
+func GetConfigFileRaw() string {
 	return string(getConfigData())
+}
+
+func GetConfigFilePretty() string {
+	return getConfigInfo().prettyConfig()
 }
 
 func GetVaultDirectory() string {
 	return getConfigInfo().VaultDirectory
+}
 
+func GetFilename() string {
+	return getConfigInfo().Filename
 }
 
 func getConfigData() []byte {
@@ -42,6 +62,7 @@ func getConfigData() []byte {
 
 func getConfigInfo() *TodoConfig {
 	var cf TodoConfig
+	
 	err := json.Unmarshal(getConfigData(), &cf)
 	if err != nil {
 		panic("Error parsing configuration file, format may be corrupted")

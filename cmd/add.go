@@ -38,5 +38,5 @@ func init() {
 	rootCmd.AddCommand(addCmd)
 
 	addCmd.Flags().StringVarP(&fileDirectory, "directory", "d", GetVaultDirectory(), "Specifies the directory of the file")
-	addCmd.Flags().StringVarP(&filename, "file", "f", "TODO.md", "Specifies which file to use")
+	addCmd.Flags().StringVarP(&filename, "file", "f", GetFilename(), "Specifies which file to use")
 }
